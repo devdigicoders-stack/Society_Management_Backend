@@ -25,6 +25,7 @@ const maintenanceRoutes = require("./routes/maintenanceRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
 const path = require("path");
 const uploadRoutes = require("./routes/uploadRoutes");
+const societyRoutes = require("./routes/societyRoutes");
 
 
 
@@ -84,5 +85,6 @@ app.use("/api/maintenance", maintenanceRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 app.use("/api/uploads", uploadRoutes);
+app.use("/api/societies", societyRoutes);
 
 module.exports = app;

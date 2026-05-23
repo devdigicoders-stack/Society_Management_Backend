@@ -1,7 +1,12 @@
 const mongoose = require("mongoose");
 
-const appointmentSchema = new mongoose.Schema(
-  {
+const appointmentSchema = new mongoose.Schema({
+
+    societyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Society",
+      required: true,
+    },
     flatOwner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

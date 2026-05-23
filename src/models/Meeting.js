@@ -1,7 +1,12 @@
 const mongoose = require("mongoose");
 
-const meetingSchema = new mongoose.Schema(
-  {
+const meetingSchema = new mongoose.Schema({
+
+    societyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Society",
+      required: true,
+    },
     title: {
       type: String,
       required: true,

@@ -3,7 +3,7 @@ const User = require("../models/User");
 // Get all users
 exports.getAllUsers = async (req, res) => {
   try {
-    const users = await User.find().select("-password").sort({ createdAt: -1 });
+    const users = await User.find({ societyId: req.user.societyId }).select("-password").sort({ createdAt: -1 });
 
     res.status(200).json({
       success: true,
@@ -21,8 +21,8 @@ exports.getAllUsers = async (req, res) => {
 // Approve user
 exports.approveUser = async (req, res) => {
   try {
-    const user = await User.findByIdAndUpdate(
-      req.params.id,
+    const user = await User.findOneAndUpdate(
+      { _id: req.params.id, societyId: req.user.societyId },
       { isApproved: true },
       { new: true }
     ).select("-password");
@@ -50,8 +50,8 @@ exports.approveUser = async (req, res) => {
 // Block user
 exports.blockUser = async (req, res) => {
   try {
-    const user = await User.findByIdAndUpdate(
-      req.params.id,
+    const user = await User.findOneAndUpdate(
+      { _id: req.params.id, societyId: req.user.societyId },
       { isBlocked: true },
       { new: true }
     ).select("-password");
@@ -72,8 +72,8 @@ exports.blockUser = async (req, res) => {
 // Unblock user
 exports.unblockUser = async (req, res) => {
   try {
-    const user = await User.findByIdAndUpdate(
-      req.params.id,
+    const user = await User.findOneAndUpdate(
+      { _id: req.params.id, societyId: req.user.societyId },
       { isBlocked: false },
       { new: true }
     ).select("-password");

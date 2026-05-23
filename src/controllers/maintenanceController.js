@@ -9,6 +9,7 @@ exports.createMaintenanceDue = async (req, res) => {
       amount: req.body.amount,
       dueDate: req.body.dueDate,
       createdBy: req.user._id,
+      societyId: req.user.societyId,
     });
 
     res.status(201).json({
@@ -28,6 +29,7 @@ exports.getMyMaintenanceDues = async (req, res) => {
   try {
     const dues = await MaintenanceDue.find({
       flatOwner: req.user._id,
+      societyId: req.user.societyId,
     }).sort({ createdAt: -1 });
 
     res.status(200).json({
@@ -45,7 +47,7 @@ exports.getMyMaintenanceDues = async (req, res) => {
 
 exports.getAllMaintenanceDues = async (req, res) => {
   try {
-    const dues = await MaintenanceDue.find()
+    const dues = await MaintenanceDue.find({ societyId: req.user.societyId })
       .populate("flatOwner", "name phone email role")
       .populate("createdBy", "name role")
       .sort({ createdAt: -1 });
@@ -65,8 +67,8 @@ exports.getAllMaintenanceDues = async (req, res) => {
 
 exports.markMaintenancePaid = async (req, res) => {
   try {
-    const due = await MaintenanceDue.findByIdAndUpdate(
-      req.params.id,
+    const due = await MaintenanceDue.findOneAndUpdate(
+      { _id: req.params.id, societyId: req.user.societyId },
       {
         status: "PAID",
         paymentMode: req.body.paymentMode || "CASH",
@@ -97,8 +99,8 @@ exports.markMaintenancePaid = async (req, res) => {
 
 exports.updateMaintenanceStatus = async (req, res) => {
   try {
-    const due = await MaintenanceDue.findByIdAndUpdate(
-      req.params.id,
+    const due = await MaintenanceDue.findOneAndUpdate(
+      { _id: req.params.id, societyId: req.user.societyId },
       {
         status: req.body.status,
       },

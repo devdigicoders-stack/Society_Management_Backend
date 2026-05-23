@@ -10,6 +10,7 @@ exports.createGuestEntry = async (req, res) => {
       purpose: req.body.purpose,
       vehicleNumber: req.body.vehicleNumber,
       photo: req.body.photo,
+      societyId: req.user.societyId,
     });
 
     res.status(201).json({
@@ -27,7 +28,7 @@ exports.createGuestEntry = async (req, res) => {
 
 exports.getMyGuestRequests = async (req, res) => {
   try {
-    const guests = await Guest.find({ flatOwner: req.user._id })
+    const guests = await Guest.find({ flatOwner: req.user._id, societyId: req.user.societyId })
       .populate("guard", "name phone role")
       .sort({ createdAt: -1 });
 
@@ -50,6 +51,7 @@ exports.approveGuest = async (req, res) => {
       {
         _id: req.params.id,
         flatOwner: req.user._id,
+        societyId: req.user.societyId,
       },
       {
         status: "APPROVED",
@@ -83,6 +85,7 @@ exports.rejectGuest = async (req, res) => {
       {
         _id: req.params.id,
         flatOwner: req.user._id,
+        societyId: req.user.societyId,
       },
       {
         status: "REJECTED",
@@ -117,6 +120,7 @@ exports.markGuestEntered = async (req, res) => {
         _id: req.params.id,
         guard: req.user._id,
         status: "APPROVED",
+        societyId: req.user.societyId,
       },
       {
         status: "ENTERED",
@@ -152,6 +156,7 @@ exports.markGuestExited = async (req, res) => {
         _id: req.params.id,
         guard: req.user._id,
         status: "ENTERED",
+        societyId: req.user.societyId,
       },
       {
         status: "EXITED",
@@ -182,7 +187,7 @@ exports.markGuestExited = async (req, res) => {
 
 exports.getAllGuestHistory = async (req, res) => {
   try {
-    const guests = await Guest.find()
+    const guests = await Guest.find({ societyId: req.user.societyId })
       .populate("guard", "name phone role")
       .populate("flatOwner", "name phone role")
       .sort({ createdAt: -1 });

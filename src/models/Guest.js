@@ -1,7 +1,12 @@
 const mongoose = require("mongoose");
 
-const guestSchema = new mongoose.Schema(
-  {
+const guestSchema = new mongoose.Schema({
+
+    societyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Society",
+      required: true,
+    },
     guard: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

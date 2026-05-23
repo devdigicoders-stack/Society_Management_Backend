@@ -9,6 +9,7 @@ exports.createNotice = async (req, res) => {
       category: req.body.category,
       attachments: req.body.attachments,
       createdBy: req.user._id,
+      societyId: req.user.societyId,
     });
 
     res.status(201).json({
@@ -29,7 +30,7 @@ exports.createNotice = async (req, res) => {
 exports.getAllNotices = async (req, res) => {
   try {
 
-    const notices = await Notice.find({ isActive: true })
+    const notices = await Notice.find({ isActive: true, societyId: req.user.societyId })
       .populate("createdBy", "name role")
       .sort({ createdAt: -1 });
 
@@ -51,8 +52,8 @@ exports.getAllNotices = async (req, res) => {
 exports.updateNotice = async (req, res) => {
   try {
 
-    const notice = await Notice.findByIdAndUpdate(
-      req.params.id,
+    const notice = await Notice.findOneAndUpdate(
+      { _id: req.params.id, societyId: req.user.societyId },
       {
         title: req.body.title,
         description: req.body.description,
@@ -87,8 +88,8 @@ exports.updateNotice = async (req, res) => {
 exports.deleteNotice = async (req, res) => {
   try {
 
-    const notice = await Notice.findByIdAndUpdate(
-      req.params.id,
+    const notice = await Notice.findOneAndUpdate(
+      { _id: req.params.id, societyId: req.user.societyId },
       {
         isActive: false,
       },

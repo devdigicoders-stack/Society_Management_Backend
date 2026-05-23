@@ -1,7 +1,12 @@
 const mongoose = require("mongoose");
 
-const dailyStaffLogSchema = new mongoose.Schema(
-  {
+const dailyStaffLogSchema = new mongoose.Schema({
+
+    societyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Society",
+      required: true,
+    },
     dailyStaff: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "DailyStaff",

@@ -1,7 +1,12 @@
 const mongoose = require("mongoose");
 
-const dailyStaffSchema = new mongoose.Schema(
-  {
+const dailyStaffSchema = new mongoose.Schema({
+
+    societyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Society",
+      required: true,
+    },
     flatOwner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

@@ -13,6 +13,7 @@ exports.createPoll = async (req, res) => {
       createdBy: req.user._id,
       startDate: req.body.startDate,
       endDate: req.body.endDate,
+      societyId: req.user.societyId,
     });
 
     res.status(201).json({
@@ -30,7 +31,7 @@ exports.createPoll = async (req, res) => {
 
 exports.getAllPolls = async (req, res) => {
   try {
-    const polls = await Poll.find({ isActive: true })
+    const polls = await Poll.find({ isActive: true, societyId: req.user.societyId })
       .populate("createdBy", "name role")
       .sort({ createdAt: -1 });
 
@@ -51,7 +52,7 @@ exports.votePoll = async (req, res) => {
   try {
     const { optionId } = req.body;
 
-    const poll = await Poll.findById(req.params.id);
+    const poll = await Poll.findOne({ _id: req.params.id, societyId: req.user.societyId });
 
     if (!poll) {
       return res.status(404).json({
@@ -108,7 +109,7 @@ exports.votePoll = async (req, res) => {
 
 exports.getPollResult = async (req, res) => {
   try {
-    const poll = await Poll.findById(req.params.id).populate(
+    const poll = await Poll.findOne({ _id: req.params.id, societyId: req.user.societyId }).populate(
       "createdBy",
       "name role"
     );
@@ -142,8 +143,8 @@ exports.getPollResult = async (req, res) => {
 
 exports.deletePoll = async (req, res) => {
   try {
-    const poll = await Poll.findByIdAndUpdate(
-      req.params.id,
+    const poll = await Poll.findOneAndUpdate(
+      { _id: req.params.id, societyId: req.user.societyId },
       { isActive: false },
       { new: true }
     );

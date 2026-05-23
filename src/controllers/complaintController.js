@@ -4,6 +4,7 @@ exports.createComplaint = async (req, res) => {
   try {
     const complaint = await Complaint.create({
       flatOwner: req.user._id,
+      societyId: req.user.societyId,
       title: req.body.title,
       description: req.body.description,
       category: req.body.category,
@@ -50,7 +51,9 @@ exports.getMyComplaints = async (req, res) => {
 exports.getAllComplaints = async (req, res) => {
   try {
 
-    const complaints = await Complaint.find()
+    const complaints = await Complaint.find({
+      societyId: req.user.societyId,
+    })
       .populate("flatOwner", "name phone email role")
       .sort({ createdAt: -1 });
 
@@ -72,8 +75,8 @@ exports.getAllComplaints = async (req, res) => {
 exports.updateComplaintStatus = async (req, res) => {
   try {
 
-    const complaint = await Complaint.findByIdAndUpdate(
-      req.params.id,
+    const complaint = await Complaint.findOneAndUpdate(
+      { _id: req.params.id, societyId: req.user.societyId },
       {
         status: req.body.status,
         adminComment: req.body.adminComment,

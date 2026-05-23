@@ -9,10 +9,10 @@ const flatOwnerSchema = new mongoose.Schema(
       unique: true,
     },
 
-    societyName: {
-      type: String,
+    societyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Society",
       required: true,
-      trim: true,
     },
 
     tower: {

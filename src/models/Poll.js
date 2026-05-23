@@ -1,7 +1,12 @@
 const mongoose = require("mongoose");
 
-const pollSchema = new mongoose.Schema(
-  {
+const pollSchema = new mongoose.Schema({
+
+    societyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Society",
+      required: true,
+    },
     question: {
       type: String,
       required: true,

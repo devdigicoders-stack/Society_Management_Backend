@@ -8,6 +8,7 @@ exports.createService = async (req, res) => {
       description: req.body.description,
       price: req.body.price,
       createdBy: req.user._id,
+      societyId: req.user.societyId,
     });
 
     res.status(201).json({
@@ -25,7 +26,7 @@ exports.createService = async (req, res) => {
 
 exports.getAllServices = async (req, res) => {
   try {
-    const services = await Service.find({ isActive: true })
+    const services = await Service.find({ isActive: true, societyId: req.user.societyId })
       .populate("createdBy", "name role")
       .sort({ createdAt: -1 });
 
@@ -44,8 +45,8 @@ exports.getAllServices = async (req, res) => {
 
 exports.updateService = async (req, res) => {
   try {
-    const service = await Service.findByIdAndUpdate(
-      req.params.id,
+    const service = await Service.findOneAndUpdate(
+      { _id: req.params.id, societyId: req.user.societyId },
       {
         category: req.body.category,
         serviceName: req.body.serviceName,
@@ -77,8 +78,8 @@ exports.updateService = async (req, res) => {
 
 exports.deleteService = async (req, res) => {
   try {
-    const service = await Service.findByIdAndUpdate(
-      req.params.id,
+    const service = await Service.findOneAndUpdate(
+      { _id: req.params.id, societyId: req.user.societyId },
       { isActive: false },
       { new: true }
     );

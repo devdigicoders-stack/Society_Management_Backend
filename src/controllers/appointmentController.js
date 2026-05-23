@@ -8,7 +8,9 @@ exports.createAppointment = async (req, res) => {
       appointmentDate: req.body.appointmentDate,
       appointmentTime: req.body.appointmentTime,
       address: req.body.address,
+      address: req.body.address,
       notes: req.body.notes,
+      societyId: req.user.societyId,
     });
 
     res.status(201).json({
@@ -28,6 +30,7 @@ exports.getMyAppointments = async (req, res) => {
   try {
     const appointments = await Appointment.find({
       flatOwner: req.user._id,
+      societyId: req.user.societyId,
     })
       .populate("service", "serviceName category price")
       .sort({ createdAt: -1 });
@@ -47,7 +50,7 @@ exports.getMyAppointments = async (req, res) => {
 
 exports.getAllAppointments = async (req, res) => {
   try {
-    const appointments = await Appointment.find()
+    const appointments = await Appointment.find({ societyId: req.user.societyId })
       .populate("flatOwner", "name phone email")
       .populate("service", "serviceName category price")
       .sort({ createdAt: -1 });
@@ -67,8 +70,8 @@ exports.getAllAppointments = async (req, res) => {
 
 exports.assignServiceProvider = async (req, res) => {
   try {
-    const appointment = await Appointment.findByIdAndUpdate(
-      req.params.id,
+    const appointment = await Appointment.findOneAndUpdate(
+      { _id: req.params.id, societyId: req.user.societyId },
       {
         assignedProvider: req.body.assignedProvider,
         status: "ASSIGNED",
@@ -98,8 +101,8 @@ exports.assignServiceProvider = async (req, res) => {
 
 exports.updateAppointmentStatus = async (req, res) => {
   try {
-    const appointment = await Appointment.findByIdAndUpdate(
-      req.params.id,
+    const appointment = await Appointment.findOneAndUpdate(
+      { _id: req.params.id, societyId: req.user.societyId },
       {
         status: req.body.status,
       },

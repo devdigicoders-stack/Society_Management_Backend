@@ -3,6 +3,12 @@ const bcrypt = require("bcryptjs");
 
 const userSchema = new mongoose.Schema(
   {
+    societyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Society",
+      // Not strictly required for SYSTEM_ADMIN, but normally required for others
+    },
+
     name: {
       type: String,
       required: true,
@@ -30,6 +36,7 @@ const userSchema = new mongoose.Schema(
     role: {
       type: String,
       enum: [
+        "SYSTEM_ADMIN",
         "SUPER_ADMIN",
         "MANAGER",
         "FLAT_OWNER",

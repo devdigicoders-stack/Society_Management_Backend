@@ -13,7 +13,7 @@ exports.createGuardProfile = async (req, res) => {
 
     const guard = await Guard.create({
       user: req.user._id,
-      societyName: req.body.societyName,
+      societyId: req.user.societyId,
       shift: req.body.shift,
       gateNumber: req.body.gateNumber,
     });
@@ -33,7 +33,7 @@ exports.createGuardProfile = async (req, res) => {
 
 exports.getMyGuardProfile = async (req, res) => {
   try {
-    const guard = await Guard.findOne({ user: req.user._id }).populate(
+    const guard = await Guard.findOne({ user: req.user._id, societyId: req.user.societyId }).populate(
       "user",
       "name email phone role"
     );
@@ -52,7 +52,7 @@ exports.getMyGuardProfile = async (req, res) => {
 
 exports.getAllGuards = async (req, res) => {
   try {
-    const guards = await Guard.find()
+    const guards = await Guard.find({ societyId: req.user.societyId })
       .populate("user", "name email phone role isApproved isBlocked")
       .sort({ createdAt: -1 });
 

@@ -10,6 +10,7 @@ exports.createMeeting = async (req, res) => {
       location: req.body.location,
       agenda: req.body.agenda,
       createdBy: req.user._id,
+      societyId: req.user.societyId,
     });
 
     res.status(201).json({
@@ -27,7 +28,7 @@ exports.createMeeting = async (req, res) => {
 
 exports.getAllMeetings = async (req, res) => {
   try {
-    const meetings = await Meeting.find({ isActive: true })
+    const meetings = await Meeting.find({ isActive: true, societyId: req.user.societyId })
       .populate("createdBy", "name role")
       .sort({ meetingDate: 1 });
 
@@ -46,8 +47,8 @@ exports.getAllMeetings = async (req, res) => {
 
 exports.updateMeeting = async (req, res) => {
   try {
-    const meeting = await Meeting.findByIdAndUpdate(
-      req.params.id,
+    const meeting = await Meeting.findOneAndUpdate(
+      { _id: req.params.id, societyId: req.user.societyId },
       {
         title: req.body.title,
         description: req.body.description,
@@ -81,8 +82,8 @@ exports.updateMeeting = async (req, res) => {
 
 exports.deleteMeeting = async (req, res) => {
   try {
-    const meeting = await Meeting.findByIdAndUpdate(
-      req.params.id,
+    const meeting = await Meeting.findOneAndUpdate(
+      { _id: req.params.id, societyId: req.user.societyId },
       { isActive: false },
       { new: true }
     );

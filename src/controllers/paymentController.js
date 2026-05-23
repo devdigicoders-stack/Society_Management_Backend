@@ -15,6 +15,7 @@ exports.createPaymentOrder = async (req, res) => {
       _id: req.body.maintenanceDue,
       flatOwner: req.user._id,
       status: "PENDING",
+      societyId: req.user.societyId,
     });
 
     if (!due) {
@@ -35,6 +36,7 @@ exports.createPaymentOrder = async (req, res) => {
       maintenanceDue: due._id,
       razorpayOrderId: order.id,
       amount: due.amount,
+      societyId: req.user.societyId,
     });
 
     res.status(201).json({
@@ -75,7 +77,7 @@ exports.verifyPayment = async (req, res) => {
     }
 
     const payment = await Payment.findOneAndUpdate(
-      { razorpayOrderId: razorpay_order_id },
+      { razorpayOrderId: razorpay_order_id, societyId: req.user.societyId },
       {
         razorpayPaymentId: razorpay_payment_id,
         razorpaySignature: razorpay_signature,
@@ -84,7 +86,7 @@ exports.verifyPayment = async (req, res) => {
       { new: true }
     );
 
-    await MaintenanceDue.findByIdAndUpdate(payment.maintenanceDue, {
+    await MaintenanceDue.findOneAndUpdate({ _id: payment.maintenanceDue, societyId: req.user.societyId }, {
       status: "PAID",
       paymentMode: "ONLINE",
       paidAt: new Date(),
@@ -105,7 +107,7 @@ exports.verifyPayment = async (req, res) => {
 
 exports.getMyPayments = async (req, res) => {
   try {
-    const payments = await Payment.find({ flatOwner: req.user._id })
+    const payments = await Payment.find({ flatOwner: req.user._id, societyId: req.user.societyId })
       .populate("maintenanceDue", "month year amount status")
       .sort({ createdAt: -1 });
 

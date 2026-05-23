@@ -15,7 +15,7 @@ exports.createFlatOwnerProfile = async (req, res) => {
 
     const profile = await FlatOwner.create({
       user: req.user._id,
-      societyName: req.body.societyName,
+      societyId: req.user.societyId,
       tower: req.body.tower,
       floor: req.body.floor,
       flatNumber: req.body.flatNumber,
@@ -56,7 +56,7 @@ exports.getMyFlatOwnerProfile = async (req, res) => {
 
 exports.getAllFlatOwners = async (req, res) => {
   try {
-    const profiles = await FlatOwner.find()
+    const profiles = await FlatOwner.find({ societyId: req.user.societyId })
       .populate("user", "name email phone role isApproved isBlocked")
       .sort({ createdAt: -1 });
 

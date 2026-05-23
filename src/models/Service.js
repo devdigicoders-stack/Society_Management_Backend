@@ -1,7 +1,12 @@
 const mongoose = require("mongoose");
 
-const serviceSchema = new mongoose.Schema(
-  {
+const serviceSchema = new mongoose.Schema({
+
+    societyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Society",
+      required: true,
+    },
     category: {
       type: String,
       enum: [

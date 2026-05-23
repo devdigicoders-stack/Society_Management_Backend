@@ -11,7 +11,9 @@ exports.createDailyStaff = async (req, res) => {
       photo: req.body.photo,
       allowedDays: req.body.allowedDays,
       entryTime: req.body.entryTime,
+      entryTime: req.body.entryTime,
       exitTime: req.body.exitTime,
+      societyId: req.user.societyId,
     });
 
     res.status(201).json({
@@ -29,7 +31,7 @@ exports.createDailyStaff = async (req, res) => {
 
 exports.getMyDailyStaff = async (req, res) => {
   try {
-    const staff = await DailyStaff.find({ flatOwner: req.user._id }).sort({
+    const staff = await DailyStaff.find({ flatOwner: req.user._id, societyId: req.user.societyId }).sort({
       createdAt: -1,
     });
 
@@ -48,7 +50,7 @@ exports.getMyDailyStaff = async (req, res) => {
 
 exports.getAllDailyStaff = async (req, res) => {
   try {
-    const staff = await DailyStaff.find()
+    const staff = await DailyStaff.find({ societyId: req.user.societyId })
       .populate("flatOwner", "name phone role")
       .sort({ createdAt: -1 });
 
@@ -71,6 +73,7 @@ exports.blockDailyStaff = async (req, res) => {
       {
         _id: req.params.id,
         flatOwner: req.user._id,
+        societyId: req.user.societyId,
       },
       { isBlocked: true },
       { new: true }
@@ -102,6 +105,7 @@ exports.unblockDailyStaff = async (req, res) => {
       {
         _id: req.params.id,
         flatOwner: req.user._id,
+        societyId: req.user.societyId,
       },
       { isBlocked: false },
       { new: true }
@@ -130,7 +134,7 @@ exports.unblockDailyStaff = async (req, res) => {
 
 exports.markDailyStaffEntry = async (req, res) => {
   try {
-    const staff = await DailyStaff.findById(req.params.id);
+    const staff = await DailyStaff.findOne({ _id: req.params.id, societyId: req.user.societyId });
 
     if (!staff) {
       return res.status(404).json({
@@ -149,6 +153,7 @@ exports.markDailyStaffEntry = async (req, res) => {
     const alreadyEntered = await DailyStaffLog.findOne({
       dailyStaff: staff._id,
       status: "ENTERED",
+      societyId: req.user.societyId,
     });
 
     if (alreadyEntered) {
@@ -164,6 +169,7 @@ exports.markDailyStaffEntry = async (req, res) => {
       flatOwner: staff.flatOwner,
       entryTime: new Date(),
       status: "ENTERED",
+      societyId: req.user.societyId,
     });
 
     res.status(201).json({
@@ -188,6 +194,7 @@ exports.markDailyStaffExit = async (req, res) => {
       {
         dailyStaff: req.params.id,
         status: "ENTERED",
+        societyId: req.user.societyId,
       },
       {
         exitTime: new Date(),
@@ -221,7 +228,7 @@ exports.markDailyStaffExit = async (req, res) => {
 exports.getDailyStaffLogs = async (req, res) => {
   try {
 
-    const logs = await DailyStaffLog.find()
+    const logs = await DailyStaffLog.find({ societyId: req.user.societyId })
       .populate("dailyStaff", "staffName staffPhone staffType photo")
       .populate("guard", "name phone role")
       .populate("flatOwner", "name phone role")

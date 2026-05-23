@@ -1,7 +1,12 @@
 const mongoose = require("mongoose");
 
-const noticeSchema = new mongoose.Schema(
-  {
+const noticeSchema = new mongoose.Schema({
+
+    societyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Society",
+      required: true,
+    },
     title: {
       type: String,
       required: true,
